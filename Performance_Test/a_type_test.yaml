@@ -1,0 +1,39 @@
+---
+- hosts: all
+tasks:
+- name: Disable SELinux
+  selinux:
+    state: disabled
+  when: ("vm" in group_names)
+- name: Disable SELinux with File
+  replace:
+    dest: /etc/selinux/config
+    regexp: 'SELINUX=enforcing'
+  replace: 'SELINUX=disabled'
+  when: ("vm" in group_names)
+
+- name: Adding Cluster Node Name
+  lineinfile:
+    path: /etc/hosts
+    line: '{{ item }}'
+    state: present
+    create: yes
+  with_items:
+  - '192.168.2.3 vm1'
+  - '192.168.2.4 vm2'
+
+- name: Create temp.log2
+  shell: touch a.txt
+
+- name: Install sysbench1
+  shell: curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.rpm.sh | bash
+
+- name: Install sysbench2
+  shell: yum -y install sysbench
+
+- name: Create temp.log
+  shell: touch temp.log
+
+
+
+

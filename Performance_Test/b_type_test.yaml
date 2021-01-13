@@ -1,0 +1,30 @@
+---
+- hosts: all
+  tasks:
+  
+   - name: Adding Cluster Node Name
+     lineinfile:
+         path: /etc/hosts
+         line: '{{ item }}'
+         state: present
+         create: yes
+     with_items:
+       - '192.168.2.2 master
+       - '192.168.2.3 vm1'
+       - '192.168.2.4 vm2'    
+
+   - name: Create temp.log2
+     shell: touch a.txt
+     when: ("vm" in group_names)
+
+   - name: Install sysbench1
+     shell: curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.rpm.sh | bash
+     when: ("vm" in group_names)
+    
+   - name: Install sysbench2
+     shell: yum -y install sysbench
+     when: ("vm" in group_names)    
+
+   - name: Create temp.log
+     shell: touch temp.log
+     when: ("vm" in group_names)
